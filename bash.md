@@ -1,0 +1,527 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
+
+# make less more friendly for non-text input files, see lesspipe(1)
+#[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
+
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+#force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+	# We have color support; assume it's compliant with Ecma-48
+	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+	# a case would tend to support setf rather than setaf.)
+	color_prompt=yes
+    else
+	color_prompt=
+    fi
+fi
+
+if [ "$color_prompt" = yes ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\]\$ '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+unset color_prompt force_color_prompt
+
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*)
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    ;;
+*)
+    ;;
+esac
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    #alias grep='grep --color=auto'
+    #alias fgrep='fgrep --color=auto'
+    #alias egrep='egrep --color=auto'
+fi
+
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# some more ls aliases
+#alias ll='ls -l'
+#alias la='ls -A'
+#alias l='ls -CF'
+
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+
+# Added by `rbenv init` on Sun Sep  8 02:42:41 PM IST 2024
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Go
+alias air='$(go env GOPATH)/bin/air'
+
+# Bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH=$BUN_INSTALL/bin:$PATH
+
+# Laravel
+alias lara='composer create-project laravel/laravel'
+alias cunt='php artisan make:controller'
+alias stroke='php artisan make:view'
+alias art='php artisan serve'
+alias popo='php artisan make:component'
+
+# Rails
+alias glhf='function _rails_new() {
+	git clone https://github.com/gurbaxani/rails_loadout.git  "$1" &&
+	cd "$1" &&
+	rm -rf .git &&
+	git init &&
+	bundle install &&
+	rails db:migrate &&
+	code . &&
+	exit;
+	 }; _rails_new'
+alias solve='function _solve_problems() {
+	git clone https://github.com/gurbaxani/simpull.git "$1" &&
+	cd "$1" &&
+	rm -rf .git &&
+	git init &&
+	bundle install &&
+	code . &&
+	exit;
+	}; _solve_problems'
+
+# Django
+alias va='source .venv/bin/activate'
+alias pm='python manage.py'
+alias vv='python3 -m venv .venv &&
+        va &&
+        pip install django &&
+        django-admin startproject a_core . &&
+        pm migrate &&
+        feat &&
+        pm createsuperuser'
+
+djnew() {
+    PROJECT_NAME=${1:-djnew}
+    mkdir -p $PROJECT_NAME
+    cd $PROJECT_NAME
+    touch .gitignore
+    cat > .gitignore <<EOL
+# Created by https://www.toptal.com/developers/gitignore/api/django
+
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
+
+# If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
+# in your Git repository. Update and uncomment the following line accordingly.
+# <django-project-name>/staticfiles/
+
+### Django.Python Stack ###
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+
+# Django stuff:
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+#   For a library or package, you might want to ignore these files since the code is
+#   intended to run in multiple environments; otherwise, check them in:
+# .python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
+
+# poetry
+#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
+#   This is especially recommended for binary packages to ensure reproducibility, and is more
+#   commonly ignored for libraries.
+#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
+#poetry.lock
+
+# pdm
+#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+#pdm.lock
+#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
+#   in version control.
+#   https://pdm.fming.dev/#use-with-ide
+.pdm.toml
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/ 
+EOL
+    git init
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install django
+    django-admin startproject a_core .
+    python manage.py migrate
+    mkdir -p a_core/templates
+    cat > a_core/templates/base.html <<EOL
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}$PROJECT_NAME{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous"></script>
+</head>
+<body class="container" hx-boost="true">
+    <header>
+        <h1>Welcome to $PROJECT_NAME 😇</h1>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+        <p>Footer content goes here</p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
+EOL
+    sed -i "s/'DIRS': \[\]/'DIRS': \[BASE_DIR \/ 'a_core\/templates'\]/" a_core/settings.py
+    export DJANGO_SUPERUSER_EMAIL="django@ashwinig.com"
+    export DJANGO_SUPERUSER_USERNAME="ashwini"
+    export DJANGO_SUPERUSER_PASSWORD="LEiAZ6y!W4gFdP"
+    pm createsuperuser --noinput
+    python -m pip install django-debug-toolbar
+    sed -i "/INSTALLED_APPS = \[/a \ \ \ \ 'debug_toolbar'," a_core/settings.py
+    sed -i "/from django.urls import path/a from django.urls import include" a_core/urls.py
+    sed -i "/from django.urls import include/a from debug_toolbar.toolbar import debug_toolbar_urls" a_core/urls.py
+    sed -i "/urlpatterns = \[/a \ \ \ \ path('__debug__/', include(debug_toolbar_urls()))," a_core/urls.py
+    sed -i "/MIDDLEWARE = \[/a \ \ \ \ 'debug_toolbar.middleware.DebugToolbarMiddleware'," a_core/settings.py
+    echo "INTERNAL_IPS = ['127.0.0.1']" >> a_core/settings.py
+    git add .
+    git commit -m "BATMAN"
+    feat public_pages
+    sed -i "s|path('public_pages/', include('public_pages.urls'))|path('', include('public_pages.urls'))|" a_core/urls.py
+}
+# Django app creation shortcut
+feat() {
+    # Set the app name, defaulting to "example_app" if no argument is given
+    APP_NAME=${1:-example_app}
+
+    # Create the Django app
+    python3 manage.py startapp $APP_NAME
+
+    mkdir -p $APP_NAME/templates/$APP_NAME
+    cat > $APP_NAME/templates/$APP_NAME/index.html <<EOL
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Hello from $APP_NAME!</h1>
+    <p>This is the index page for the $APP_NAME app.</p>
+{% endblock %}
+EOL
+
+    # Add a basic view to views.py
+    cat > $APP_NAME/views.py <<EOL
+from django.shortcuts import render
+
+def index(request):
+    return render(request, '$APP_NAME/index.html')
+EOL
+
+
+    # Add URL pattern in the new urls.py
+    touch $APP_NAME/urls.py
+    cat > $APP_NAME/urls.py <<EOL
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.index, name='index'),
+]
+EOL
+
+    # Register the app in the main urls.py 
+    sed -i "/urlpatterns = \[/a \ \ \ \ path('$APP_NAME/', include('$APP_NAME.urls'))," a_core/urls.py
+    
+    # Add a basic, commented-out model in models.py
+    cat >> $APP_NAME/models.py <<EOL
+'''
+import uuid
+from django.contrib.auth.models import User
+
+class MenuCategory(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Menu(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    description = models.TextField(blank=True)
+    # Always use decimal field for monetery values
+    price = models.DecimalField(max_digits=10, decimal_places=2) 
+    is_available = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    category = models.ForeignKey(MenuCategory, on_delete=models.PROTECT)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    tags = models.ManyToManyField('Tag', blank=True) #use '' to refrence a model that you declare later
+    GOLD_MEMBERSHIP = 'go'
+    SILVER_MEMBERSHIP = 'si'
+    BRONZE_MEMBERSHIP = 'br'
+    MEMBERSHIP_CHOICES = [
+    (GOLD_MEMBERSHIP, 'gold'),
+    (SILVER_MEMBERSHIP, 'silver'),
+    (BRONZE_MEMBERSHIP, 'bronze'),
+    ]
+    membership = models.CharField(max_length=2,choices=MEMBERSHIP_CHOICES,default=BRONZE_MEMBERSHIP)
+    # Ref: https://docs.djangoproject.com/en/5.1/ref/models/fields/
+    # Watch Mosh's videos on one-to-one, one-to-many, and many-to-many relationships
+    
+    def __str__(self):
+        return self.name
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+class StaffPrimaryAddress(models.Model):
+    street = models.CharField(max_length=255)
+    landmark = models.CharField(max_length=255)
+    staff = models.OneToOneField(SomeModel, on_delete=models.CASCADE, primary_key=True) # use primary key, else django will set its own and it wont be one-to-one.
+    # ^^ NO NEED to define the reverse relationship. Django automatically creates this for us.
+
+class StaffAddresses(models.Model):
+    street = models.CharField(max_length=255)
+    landmark = models.CharField(max_length=255)
+    staff = models.ForeignKey(SomeModel, on_delete=models.CASCADE) # one-to-many relationship, there is no such thing as models.OneToManyField.
+    # ^^ NO NEED to define the reverse relationship. Django automatically creates this for us.
+
+'''
+EOL
+    sed -i "/INSTALLED_APPS = \[/a \ \ \ \ '$APP_NAME'," a_core/settings.py
+    echo "App $APP_NAME created with urls.py, a basic view, and a reference model 🚀"
+    echo "NEXT STEPS:"
+    echo "0. Construct the model"
+    echo "2. Register the models in $APP_NAME/admin.py, like this"
+    echo "from .models import ModelName, ModelCategory"
+    echo "admin.site.register(ModelName)"
+    echo "3. makemigrations and migrate"
+}
+
+alias contabo='ssh root@5.189.158.148'
+alias oracle='ssh -i code/archive/oracle/ssh-key-2025-03-02.key ubuntu@80.225.220.160'
+alias warmup='sudo systemctl start docker docker.socket && echo Done! Go to: http://localhost:8000/'
+alias cooldown='sudo systemctl stop docker docker.socket'
+
+alias djnew="/home/ashwini/code/archive/bash-scripts/new_django_project.sh"
+alias svelte="npx sv "
+alias brr="codium . && exit"
+alias tube="cd /home/ashwini/code/archive/agni2 && va && python main.py"
+alias vite="pnpm create vite@latest"
+
+monday() {
+  if [ -z "$1" ]; then
+    echo "❌ Usage: monday <app-name>"
+    return 1
+  fi
+
+  git clone git@github.com:gurbaxani/readmestack.git "$1" && \
+  cd "$1" && \
+  rm -rf .git && \
+  echo "✅ Created new app '$1' from readmestack." && \
+  git init && \
+  brr
+}

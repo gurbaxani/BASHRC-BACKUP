@@ -523,5 +523,6 @@ monday() {
   rm -rf .git && \
   echo "✅ Created new app '$1' from readmestack." && \
   git init && \
+  pnpm install && \
   brr
 }

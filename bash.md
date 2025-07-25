@@ -526,3 +526,19 @@ monday() {
   pnpm install && \
   brr
 }
+
+spon() {
+  local file_name="$1"
+  local path="./src/lib/components/${file_name}.svelte"
+  mkdir -p "$(dirname "$path")"
+  touch "$path"
+  echo "Created $file_name component"
+}
+
+spage() {
+  local page_name="$1"
+  local path="./src/routes/${page_name}/+page.svelte"
+  mkdir -p "$(dirname "$path")"
+  touch "$path"
+  echo "Created $page_name page"
+}
